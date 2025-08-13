@@ -1,3 +1,4 @@
+//pages/Teams.jsx
 import React, { useState } from 'react'
 import {
   Ellipsis,
@@ -65,8 +66,6 @@ const Teams = () => {
 
       </div>
 
-
-<div onClick={()=>navigate('/create-team')} className='text-[#946BEF] font-medium flex gap-x-1 items-center cursor-pointer'><CirclePlus size={16}/>Create New Team</div>
 </div>
 
 

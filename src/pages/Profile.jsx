@@ -1,253 +1,1362 @@
-import React, {useState} from 'react'
-import profilepic from "../assets/profilepic.jpg"
+// // pages/Profile.jsx
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+// import { URL } from '../url';
+// import { useAuth } from '../context/AuthContext';
+// import profilepic from "../assets/profilepic.jpg";
+// import { 
+//   Save, 
+//   Edit, 
+//   User, 
+//   Mail, 
+//   Phone, 
+//   MapPin, 
+//   Clock, 
+//   DollarSign,
+//   Award,
+//   AlertCircle,
+//   Check,
+//   RefreshCw
+// } from 'lucide-react';
+
+// const Profile = () => {
+//   const { user, updateUser } = useAuth();
+//   const [profile, setProfile] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [saving, setSaving] = useState(false);
+//   const [error, setError] = useState('');
+//   const [successMessage, setSuccessMessage] = useState('');
+//   const [editMode, setEditMode] = useState(false);
+
+//   // Form data
+//   const [formData, setFormData] = useState({
+//     // User info
+//     firstName: '',
+//     lastName: '',
+//     email: '',
+//     phone: '',
+    
+//     // Coach specific info
+//     bio: '',
+//     experience: '',
+//     hourlyRate: '',
+//     specialties: [],
+//     certifications: [],
+//     location: {
+//       city: '',
+//       state: '',
+//       country: ''
+//     }
+//   });
+
+//   // Availability state
+//   const [availability, setAvailability] = useState({
+//     Monday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//     Tuesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//     Wednesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//     Thursday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//     Friday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//     Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//     Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
+//   });
+
+//   // Fetch coach profile
+//   const fetchProfile = async () => {
+//     try {
+//       setLoading(true);
+//       setError('');
+      
+//       const token = localStorage.getItem('access_token');
+//       if (!token) {
+//         setError('Please login to view profile');
+//         return;
+//       }
+
+//       const response = await axios.get(`${URL}/api/coaches/profile/me`, {
+//         headers: { 'Authorization': `Bearer ${token}` }
+//       });
+
+//       if (response.data.success) {
+//         const coachData = response.data.data;
+//         setProfile(coachData);
+        
+//         // Update form data
+//         setFormData({
+//           firstName: coachData.User?.firstName || '',
+//           lastName: coachData.User?.lastName || '',
+//           email: coachData.User?.email || '',
+//           phone: coachData.User?.phone || '',
+//           bio: coachData.bio || '',
+//           experience: coachData.experience || '',
+//           hourlyRate: coachData.hourlyRate || '',
+//           specialties: coachData.specialties || [],
+//           certifications: coachData.certifications || [],
+//           location: coachData.location || { city: '', state: '', country: '' }
+//         });
+
+//         // Update availability if exists
+//         if (coachData.availability) {
+//           setAvailability(coachData.availability);
+//         }
+//       }
+//     } catch (err) {
+//       console.error('Error fetching profile:', err);
+//       setError('Failed to load profile');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Update profile
+//   const updateProfile = async () => {
+//     try {
+//       setSaving(true);
+//       setError('');
+//       setSuccessMessage('');
+      
+//       const token = localStorage.getItem('access_token');
+//       if (!token) {
+//         setError('Please login to update profile');
+//         return;
+//       }
+
+//       // Update coach profile
+//       const coachUpdateData = {
+//         bio: formData.bio,
+//         experience: parseInt(formData.experience) || 0,
+//         hourlyRate: parseFloat(formData.hourlyRate) || 0,
+//         specialties: formData.specialties,
+//         certifications: formData.certifications,
+//         location: formData.location,
+//         availability: availability
+//       };
+
+//       const response = await axios.put(`${URL}/api/coaches/profile/me`, coachUpdateData, {
+//         headers: { 'Authorization': `Bearer ${token}` }
+//       });
+
+//       if (response.data.success) {
+//         setSuccessMessage('Profile updated successfully!');
+//         setEditMode(false);
+        
+//         // Update user context if user data changed
+//         if (formData.firstName !== user?.firstName || formData.lastName !== user?.lastName) {
+//           updateUser({
+//             firstName: formData.firstName,
+//             lastName: formData.lastName
+//           });
+//         }
+        
+//         // Refresh profile data
+//         await fetchProfile();
+        
+//         // Clear success message after 3 seconds
+//         setTimeout(() => setSuccessMessage(''), 3000);
+//       }
+//     } catch (err) {
+//       console.error('Error updating profile:', err);
+//       setError(err.response?.data?.message || 'Failed to update profile');
+//     } finally {
+//       setSaving(false);
+//     }
+//   };
+
+//   // Handle form input changes
+//   const handleInputChange = (field, value) => {
+//     setFormData(prev => ({
+//       ...prev,
+//       [field]: value
+//     }));
+//   };
+
+//   // Handle location changes
+//   const handleLocationChange = (field, value) => {
+//     setFormData(prev => ({
+//       ...prev,
+//       location: {
+//         ...prev.location,
+//         [field]: value
+//       }
+//     }));
+//   };
+
+//   // Handle specialties changes
+//   const handleSpecialtiesChange = (value) => {
+//     const specialties = value.split(',').map(s => s.trim()).filter(s => s);
+//     setFormData(prev => ({
+//       ...prev,
+//       specialties
+//     }));
+//   };
+
+//   // Handle certifications changes
+//   const handleCertificationsChange = (value) => {
+//     const certifications = value.split(',').map(s => s.trim()).filter(s => s);
+//     setFormData(prev => ({
+//       ...prev,
+//       certifications
+//     }));
+//   };
+
+//   // Toggle availability for a day
+//   const toggleDay = (day) => {
+//     setAvailability(prev => ({
+//       ...prev,
+//       [day]: {
+//         ...prev[day],
+//         enabled: !prev[day].enabled
+//       }
+//     }));
+//   };
+
+//   // Update time for a day
+//   const updateTime = (day, timeType, value) => {
+//     setAvailability(prev => ({
+//       ...prev,
+//       [day]: {
+//         ...prev[day],
+//         [timeType]: value
+//       }
+//     }));
+//   };
+
+//   // Generate time options
+//   const generateTimeOptions = () => {
+//     const times = [];
+//     for (let hour = 0; hour < 24; hour++) {
+//       const hourStr = hour.toString().padStart(2, '0');
+//       times.push(`${hourStr}:00`);
+//       times.push(`${hourStr}:30`);
+//     }
+//     return times;
+//   };
+
+//   const timeOptions = generateTimeOptions();
+
+//   useEffect(() => {
+//     fetchProfile();
+//   }, []);
+
+//   if (loading) {
+//     return (
+//       <div className="flex justify-center items-center h-64">
+//         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7042D2]"></div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className='px-6 py-6'>
+//       {/* Header */}
+//       <div className='flex justify-between items-center mb-6'>
+//         <div className='flex gap-3 items-center'>
+//           <img src={profilepic} className='rounded-full w-24 h-24 object-cover' />
+//           <div>
+//             <p className='font-semibold text-xl'>{formData.firstName} {formData.lastName}</p>
+//             <p className='text-gray-600'>Professional Coach</p>
+//             {profile && (
+//               <div className='flex items-center gap-4 mt-2'>
+//                 <div className='flex items-center gap-1'>
+//                   <Award size={16} className='text-yellow-500' />
+//                   <span className='text-sm'>{profile.averageRating || 0}/5 Rating</span>
+//                 </div>
+//                 <div className='flex items-center gap-1'>
+//                   <User size={16} className='text-blue-500' />
+//                   <span className='text-sm'>{profile.totalReviews || 0} Reviews</span>
+//                 </div>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+
+//         <button
+//           onClick={() => fetchProfile()}
+//           className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+//         >
+//           <RefreshCw size={16} />
+//           Refresh
+//         </button>
+//       </div>
+
+//       {/* Success Message */}
+//       {successMessage && (
+//         <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
+//           <div className="flex items-center">
+//             <Check className="w-5 h-5 text-green-400 mr-2" />
+//             <span className="text-sm text-green-700">{successMessage}</span>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Error Display */}
+//       {error && (
+//         <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+//           <div className="flex items-center">
+//             <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
+//             <span className="text-sm text-red-700">{error}</span>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Basic Information */}
+//       <div className='border-b pb-6 mb-6'>
+//         <div className='flex justify-between items-center mb-4'>
+//           <h3 className='font-semibold text-lg'>Basic Information</h3>
+//           {!editMode && (
+//             <button
+//               onClick={() => setEditMode(true)}
+//               className='flex items-center gap-2 px-3 py-1 text-[#946BEF] hover:bg-purple-50 rounded-md transition-colors'
+//             >
+//               <Edit size={16} />
+//               Edit Profile
+//             </button>
+//           )}
+//         </div>
+
+//         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>
+//               <User size={16} className='inline mr-1' />
+//               First Name
+//             </label>
+//             <input
+//               type="text"
+//               value={formData.firstName}
+//               onChange={(e) => handleInputChange('firstName', e.target.value)}
+//               disabled={!editMode}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//             />
+//           </div>
+
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>
+//               <User size={16} className='inline mr-1' />
+//               Last Name
+//             </label>
+//             <input
+//               type="text"
+//               value={formData.lastName}
+//               onChange={(e) => handleInputChange('lastName', e.target.value)}
+//               disabled={!editMode}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//             />
+//           </div>
+
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>
+//               <Mail size={16} className='inline mr-1' />
+//               Email
+//             </label>
+//             <input
+//               type="email"
+//               value={formData.email}
+//               disabled={true} // Email usually shouldn't be editable
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50'
+//             />
+//           </div>
+
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>
+//               <Phone size={16} className='inline mr-1' />
+//               Phone
+//             </label>
+//             <input
+//               type="tel"
+//               value={formData.phone}
+//               onChange={(e) => handleInputChange('phone', e.target.value)}
+//               disabled={!editMode}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//             />
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Professional Information */}
+//       <div className='border-b pb-6 mb-6'>
+//         <h3 className='font-semibold text-lg mb-4'>Professional Information</h3>
+        
+//         <div className='space-y-4'>
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>Bio</label>
+//             <textarea
+//               value={formData.bio}
+//               onChange={(e) => handleInputChange('bio', e.target.value)}
+//               disabled={!editMode}
+//               rows={4}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//               placeholder="Tell clients about your coaching experience and philosophy..."
+//             />
+//           </div>
+
+//           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+//             <div>
+//               <label className='block text-sm font-medium text-gray-700 mb-1'>
+//                 <Clock size={16} className='inline mr-1' />
+//                 Experience (Years)
+//               </label>
+//               <input
+//                 type="number"
+//                 value={formData.experience}
+//                 onChange={(e) => handleInputChange('experience', e.target.value)}
+//                 disabled={!editMode}
+//                 min="0"
+//                 max="50"
+//                 className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//               />
+//             </div>
+
+//             <div>
+//               <label className='block text-sm font-medium text-gray-700 mb-1'>
+//                 <DollarSign size={16} className='inline mr-1' />
+//                 Hourly Rate (₦)
+//               </label>
+//               <input
+//                 type="number"
+//                 value={formData.hourlyRate}
+//                 onChange={(e) => handleInputChange('hourlyRate', e.target.value)}
+//                 disabled={!editMode}
+//                 min="0"
+//                 className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//               />
+//             </div>
+//           </div>
+
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>Specialties</label>
+//             <input
+//               type="text"
+//               value={formData.specialties.join(', ')}
+//               onChange={(e) => handleSpecialtiesChange(e.target.value)}
+//               disabled={!editMode}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//               placeholder="e.g., Football, Basketball, Fitness Training (comma separated)"
+//             />
+//           </div>
+
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>Certifications</label>
+//             <input
+//               type="text"
+//               value={formData.certifications.join(', ')}
+//               onChange={(e) => handleCertificationsChange(e.target.value)}
+//               disabled={!editMode}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//               placeholder="e.g., UEFA License, NASM CPT (comma separated)"
+//             />
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Location */}
+//       <div className='border-b pb-6 mb-6'>
+//         <h3 className='font-semibold text-lg mb-4'>
+//           <MapPin size={20} className='inline mr-2' />
+//           Location
+//         </h3>
+        
+//         <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>City</label>
+//             <input
+//               type="text"
+//               value={formData.location.city}
+//               onChange={(e) => handleLocationChange('city', e.target.value)}
+//               disabled={!editMode}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//             />
+//           </div>
+
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>State</label>
+//             <input
+//               type="text"
+//               value={formData.location.state}
+//               onChange={(e) => handleLocationChange('state', e.target.value)}
+//               disabled={!editMode}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//             />
+//           </div>
+
+//           <div>
+//             <label className='block text-sm font-medium text-gray-700 mb-1'>Country</label>
+//             <input
+//               type="text"
+//               value={formData.location.country}
+//               onChange={(e) => handleLocationChange('country', e.target.value)}
+//               disabled={!editMode}
+//               className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+//             />
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Availability */}
+//       <div className='pb-6 mb-6'>
+//         <h3 className='font-semibold text-lg mb-4'>Availability</h3>
+        
+//         <div className="space-y-4">
+//           {Object.entries(availability).map(([day, settings]) => (
+//             <div key={day} className="flex items-center justify-between p-3 gap-x-6 border border-gray-200 rounded-lg hover:bg-gray-50">
+//               {/* Left Column - Day and Toggle */}
+//               <div className="flex items-center space-x-4 w-1/3">
+//                 <span className="font-medium text-gray-700 w-20">{day}</span>
+                
+//                 {/* Toggle Switch */}
+//                 <button
+//                   onClick={() => editMode && toggleDay(day)}
+//                   disabled={!editMode}
+//                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+//                     settings.enabled ? 'bg-[#946BEF]' : 'bg-gray-300'
+//                   } ${!editMode ? 'opacity-50 cursor-not-allowed' : ''}`}
+//                 >
+//                   <span
+//                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+//                       settings.enabled ? 'translate-x-6' : 'translate-x-1'
+//                     }`}
+//                   />
+//                 </button>
+//               </div>
+
+//               {/* Right Column - Time Selection */}
+//               <div className="flex items-center space-x-4 w-2/3">
+//                 {settings.enabled ? (
+//                   <>
+//                     <div className="flex items-center space-x-2">
+//                       <label className="text-sm text-gray-600">From:</label>
+//                       <select
+//                         value={settings.startTime}
+//                         onChange={(e) => editMode && updateTime(day, 'startTime', e.target.value)}
+//                         disabled={!editMode}
+//                         className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50"
+//                       >
+//                         {timeOptions.map(time => (
+//                           <option key={time} value={time}>
+//                             {time}
+//                           </option>
+//                         ))}
+//                       </select>
+//                     </div>
+
+//                     <div className="flex items-center space-x-2">
+//                       <label className="text-sm text-gray-600">To:</label>
+//                       <select
+//                         value={settings.endTime}
+//                         onChange={(e) => editMode && updateTime(day, 'endTime', e.target.value)}
+//                         disabled={!editMode}
+//                         className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50"
+//                       >
+//                         {timeOptions.map(time => (
+//                           <option key={time} value={time}>
+//                             {time}
+//                           </option>
+//                         ))}
+//                       </select>
+//                     </div>
+//                   </>
+//                 ) : (
+//                   <span className="text-gray-400 italic">Not available</span>
+//                 )}
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* Action Buttons */}
+//       {editMode && (
+//         <div className='flex gap-x-4'>
+//           <button
+//             onClick={() => setEditMode(false)}
+//             className='border-2 border-[#946BEF] text-[#946BEF] px-8 py-2 rounded-lg hover:bg-purple-50 transition-colors'
+//           >
+//             Cancel
+//           </button>
+//           <button
+//             onClick={updateProfile}
+//             disabled={saving}
+//             className='bg-[#946BEF] text-white px-8 py-2 rounded-lg hover:bg-[#7a3bc4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2'
+//           >
+//             {saving ? (
+//               <>
+//                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+//                 Saving...
+//               </>
+//             ) : (
+//               <>
+//                 <Save size={16} />
+//                 Save Changes
+//               </>
+//             )}
+//           </button>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default Profile;
+
+
+
+
+
+
+// pages/Profile.jsx
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { URL } from '../url';
+import { useAuth } from '../context/AuthContext';
+import profilepic from "../assets/profilepic.jpg";
+import { 
+  Save, 
+  Edit, 
+  User, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Clock, 
+  DollarSign,
+  Award,
+  AlertCircle,
+  Check,
+  RefreshCw
+} from 'lucide-react';
 
 const Profile = () => {
+  const { user, updateUser } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [editMode, setEditMode] = useState(false);
+
+  // Form data
+  const [formData, setFormData] = useState({
+    // User info
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    
+    // Coach specific info
+    bio: '',
+    experience: '',
+    hourlyRate: '',
+    specialties: [],
+    certifications: [],
+    location: {
+      city: '',
+      state: '',
+      country: ''
+    }
+  });
+
+  // Availability state
   const [availability, setAvailability] = useState({
-        Monday: { enabled: true, startTime: '09:00', endTime: '17:00' },
-        Tuesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-        Wednesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-        Thursday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-        Friday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-        Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-        Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
-    })
+    Monday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    Tuesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    Wednesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    Thursday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    Friday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
+  });
 
-    const toggleDay = (day) => {
-        setAvailability(prev => ({
-            ...prev,
-            [day]: {
-                ...prev[day],
-                enabled: !prev[day].enabled
-            }
-        }))
-    }
+  // Fetch coach profile
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setError('Please login to view profile');
+        return;
+      }
 
-    const updateTime = (day, timeType, value) => {
-        setAvailability(prev => ({
-            ...prev,
-            [day]: {
-                ...prev[day],
-                [timeType]: value
-            }
-        }))
-    }
+      const response = await axios.get(`${URL}/api/coaches/profile/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
 
-    const generateTimeOptions = () => {
-        const times = []
-        for (let hour = 0; hour < 24; hour++) {
-            const hourStr = hour.toString().padStart(2, '0')
-            times.push(`${hourStr}:00`)
-            times.push(`${hourStr}:30`)
+      if (response.data.success) {
+        const coachData = response.data.data;
+        setProfile(coachData);
+        
+        // Update form data
+        setFormData({
+          firstName: coachData.User?.firstName || '',
+          lastName: coachData.User?.lastName || '',
+          email: coachData.User?.email || '',
+          phone: coachData.User?.phone || '',
+          bio: coachData.bio || '',
+          experience: coachData.experience || '',
+          hourlyRate: coachData.hourlyRate || '',
+          specialties: coachData.specialties || [],
+          certifications: coachData.certifications || [],
+          location: coachData.location || { city: '', state: '', country: '' }
+        });
+
+        // Update availability if exists
+        if (coachData.availability) {
+          setAvailability(coachData.availability);
         }
-        return times
+      }
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      setError('Failed to load profile');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const timeOptions = generateTimeOptions()
+  // Update profile
+  const updateProfile = async () => {
+    try {
+      setSaving(true);
+      setError('');
+      setSuccessMessage('');
+      
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setError('Please login to update profile');
+        return;
+      }
 
+      // Update coach profile
+      const coachUpdateData = {
+        bio: formData.bio,
+        experience: parseInt(formData.experience) || 0,
+        hourlyRate: parseFloat(formData.hourlyRate) || 0,
+        specialties: formData.specialties,
+        certifications: formData.certifications,
+        location: formData.location,
+        availability: availability
+      };
 
+      const response = await axios.put(`${URL}/api/coaches/profile/me`, coachUpdateData, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
 
+      if (response.data.success) {
+        setSuccessMessage('Profile updated successfully!');
+        setEditMode(false);
+        
+        // Update user context if user data changed
+        if (formData.firstName !== user?.firstName || formData.lastName !== user?.lastName) {
+          updateUser({
+            firstName: formData.firstName,
+            lastName: formData.lastName
+          });
+        }
+        
+        // Refresh profile data
+        await fetchProfile();
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      setError(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Handle form input changes
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Handle location changes
+  const handleLocationChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      location: {
+        ...prev.location,
+        [field]: value
+      }
+    }));
+  };
+
+  // Handle specialties changes
+  const handleSpecialtiesChange = (value) => {
+    const specialties = value.split(',').map(s => s.trim()).filter(s => s);
+    setFormData(prev => ({
+      ...prev,
+      specialties
+    }));
+  };
+
+  // Handle certifications changes
+  const handleCertificationsChange = (value) => {
+    const certifications = value.split(',').map(s => s.trim()).filter(s => s);
+    setFormData(prev => ({
+      ...prev,
+      certifications
+    }));
+  };
+
+  // Toggle availability for a day
+  const toggleDay = (day) => {
+    setAvailability(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        enabled: !prev[day].enabled
+      }
+    }));
+  };
+
+  // Update time for a day
+  const updateTime = (day, timeType, value) => {
+    setAvailability(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        [timeType]: value
+      }
+    }));
+  };
+
+  // Generate time options
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      const hourStr = hour.toString().padStart(2, '0');
+      times.push(`${hourStr}:00`);
+      times.push(`${hourStr}:30`);
+    }
+    return times;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7042D2]"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className='px-6'>
-      <div className='flex gap-3 items-center'>
-        <img src={profilepic} className='rounded-full w-24 h-24 object-cover' />
-        <div>
-          <p className='font-semibold'>Abiodun Ayobami</p>
-          <p className='font-thin'>Role: Coach</p>
-        </div>
-      </div>
-
-      <div className='border-b pt-9'></div>
-
-      <div className='flex gap-32 py-9'>
-
-
-        <div>
-          <p className='font-semibold text-lg'>Name</p>
-          <p className='font-normal max-w-[250px]'>Make changes to your name</p>
-        </div>
-
-        <div>
+    <div className='px-6 py-6'>
+      {/* Header */}
+      <div className='flex justify-between items-center mb-6'>
+        <div className='flex gap-3 items-center'>
+          <img src={profilepic} className='rounded-full w-24 h-24 object-cover' />
           <div>
-            <p className='py-1'>First Name</p>
-            <input placeholder='Austin' className='px-2 rounded-2xl py-2 border border-gray-500 w-[320px]' />
-          </div>
-          <div>
-            <p className='py-1 pt-3'>Last Name</p>
-            <input placeholder='David' className='px-2 rounded-2xl py-2 border border-gray-500 w-[320px]' />
-          </div>
-        </div>
-
-
-
-      </div>
-
-
-      <div className='border-b '></div>
-
-
-      <div className='flex gap-32 py-9'>
-        <div>
-          <p className='font-semibold text-lg'>Email Address</p>
-          <p className='font-normal max-w-[250px]'>Make changes to your email</p>
-        </div>
-
-        <div>
-          <div>
-            <p className='py-1'>Email</p>
-            <input placeholder='abiodunobami@gmail.com' className='px-2 rounded-2xl py-2 border border-gray-500 w-[320px]' />
-          </div>
-
-        </div>
-
-      </div>
-
-
-  <div className='border-b '></div>
-
-
-<div className='flex gap-24 py-9'>
-        <div>
-          <p className='font-semibold text-lg'>Password</p>
-          <p className='font-normal max-w-[250px]'>Make changes to your password</p>
-        </div>
-
-        <div>
-          <div>
-            <p className='py-1'>Password</p>
-            <input placeholder='*********' className='px-2 rounded-2xl py-2 border border-gray-500 w-[320px]' />
-          </div>
-         
-        </div>
-
-
-</div>
-
-<div className='flex gap-24 py-9'>
-        <div>
-          <p className='font-semibold text-lg'>Sport Specialty</p>
-          <p className='font-normal max-w-[250px]'>Make changes to your sport specialty</p>
-        </div>
-
-        <div>
-          <div>
-            <p className='py-1'>Sport Specialty</p>
-            <input placeholder='Football' className='px-2 rounded-2xl py-2 border border-gray-500 w-[320px]' />
-          </div>
-         
-        </div>
-
-</div>
-
-<div className='flex gap-24 py-9'>
-        <div>
-          <p className='font-semibold text-lg'>Availability</p>
-          <p className='font-normal max-w-[250px]'>Make changes to your availability</p>
-        </div>
-
-        <div className="max-w-4xl bg-white">
-      <div className="space-y-4">
-                {Object.entries(availability).map(([day, settings]) => (
-                    <div key={day} className="flex items-center justify-between p-3 gap-x-6 border border-gray-200 rounded-lg hover:bg-gray-50">
-                        {/* Left Column - Day and Toggle */}
-                        <div className="flex items-center space-x-4 w-1/3">
-                            <span className="font-medium text-gray-700 w-20">{day}</span>
-                            
-                            {/* Toggle Switch */}
-                            <button
-                                onClick={() => toggleDay(day)}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                                    settings.enabled ? 'bg-[#946BEF]' : 'bg-gray-300'
-                                }`}
-                            >
-                                <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                        settings.enabled ? 'translate-x-6' : 'translate-x-1'
-                                    }`}
-                                />
-                            </button>
-                        </div>
-
-                        {/* Right Column - Time Selection */}
-                        <div className="flex items-center space-x-4 w-2/3">
-                            {settings.enabled ? (
-                                <>
-                                    <div className="flex items-center space-x-2">
-                                        <label className="text-sm text-gray-600">From:</label>
-                                        <select
-                                            value={settings.startTime}
-                                            onChange={(e) => updateTime(day, 'startTime', e.target.value)}
-                                            className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        >
-                                            {timeOptions.map(time => (
-                                                <option key={time} value={time}>
-                                                    {time}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="flex items-center space-x-2">
-                                        <label className="text-sm text-gray-600">To:</label>
-                                        <select
-                                            value={settings.endTime}
-                                            onChange={(e) => updateTime(day, 'endTime', e.target.value)}
-                                            className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        >
-                                            {timeOptions.map(time => (
-                                                <option key={time} value={time}>
-                                                    {time}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </>
-                            ) : (
-                                <span className="text-gray-400 italic">Not available</span>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Save Button */}
-            <div className="mt-6 text-center">
-                <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                    Save Availability
-                </button>
-            </div>
-
-            {/* Preview of Current Settings */}
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-medium text-gray-800 mb-3">Current Availability:</h3>
-                <div className="text-sm text-gray-600 space-y-1">
-                    {Object.entries(availability).map(([day, settings]) => (
-                        <div key={day}>
-                            <strong>{day}:</strong> {
-                                settings.enabled 
-                                    ? `${settings.startTime} - ${settings.endTime}`
-                                    : 'Not available'
-                            }
-                        </div>
-                    ))}
+            <p className='font-semibold text-xl'>{formData.firstName} {formData.lastName}</p>
+            <p className='text-gray-600'>Professional Coach</p>
+            {profile && (
+              <div className='flex items-center gap-4 mt-2'>
+                <div className='flex items-center gap-1'>
+                  <Award size={16} className='text-yellow-500' />
+                  <span className='text-sm'>{profile.averageRating || 0}/5 Rating</span>
                 </div>
-            </div>
+                <div className='flex items-center gap-1'>
+                  <User size={16} className='text-blue-500' />
+                  <span className='text-sm'>{profile.totalReviews || 0} Reviews</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
+        <button
+          onClick={() => fetchProfile()}
+          className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <RefreshCw size={16} />
+          Refresh
+        </button>
+      </div>
 
-</div>
+      {/* Success Message */}
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
+          <div className="flex items-center">
+            <Check className="w-5 h-5 text-green-400 mr-2" />
+            <span className="text-sm text-green-700">{successMessage}</span>
+          </div>
+        </div>
+      )}
 
+      {/* Error Display */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+          <div className="flex items-center">
+            <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
+            <span className="text-sm text-red-700">{error}</span>
+          </div>
+        </div>
+      )}
 
+      {/* Basic Information */}
+      <div className='border-b pb-6 mb-6'>
+        <div className='flex justify-between items-center mb-4'>
+          <h3 className='font-semibold text-lg'>Basic Information</h3>
+          {!editMode && (
+            <button
+              onClick={() => setEditMode(true)}
+              className='flex items-center gap-2 px-3 py-1 text-[#946BEF] hover:bg-purple-50 rounded-md transition-colors'
+            >
+              <Edit size={16} />
+              Edit Profile
+            </button>
+          )}
+        </div>
 
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
+              <User size={16} className='inline mr-1' />
+              First Name
+            </label>
+            <input
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => handleInputChange('firstName', e.target.value)}
+              disabled={!editMode}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+            />
+          </div>
 
-<div className='flex gap-x-6'>
-  <button className='border-2 border-[#946BEF] text-[#946BEF] px-12 py-2 rounded-lg'>Edit</button>
-    <button className='bg-[#946BEF] text-white px-12 py-2 rounded-lg'>Save</button>
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
+              <User size={16} className='inline mr-1' />
+              Last Name
+            </label>
+            <input
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => handleInputChange('lastName', e.target.value)}
+              disabled={!editMode}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+            />
+          </div>
 
-</div>
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
+              <Mail size={16} className='inline mr-1' />
+              Email
+            </label>
+            <input
+              type="email"
+              value={formData.email}
+              disabled={true} // Email usually shouldn't be editable
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50'
+            />
+          </div>
 
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>
+              <Phone size={16} className='inline mr-1' />
+              Phone
+            </label>
+            <input
+              type="tel"
+              value={formData.phone}
+              onChange={(e) => handleInputChange('phone', e.target.value)}
+              disabled={!editMode}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Professional Information */}
+      <div className='border-b pb-6 mb-6'>
+        <h3 className='font-semibold text-lg mb-4'>Professional Information</h3>
+        
+        <div className='space-y-4'>
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>Bio</label>
+            <textarea
+              value={formData.bio}
+              onChange={(e) => handleInputChange('bio', e.target.value)}
+              disabled={!editMode}
+              rows={4}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+              placeholder="Tell clients about your coaching experience and philosophy..."
+            />
+          </div>
+
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>
+                <Clock size={16} className='inline mr-1' />
+                Experience (Years)
+              </label>
+              <input
+                type="number"
+                value={formData.experience}
+                onChange={(e) => handleInputChange('experience', e.target.value)}
+                disabled={!editMode}
+                min="0"
+                max="50"
+                className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+              />
+            </div>
+
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-1'>
+                <DollarSign size={16} className='inline mr-1' />
+                Hourly Rate (₦)
+              </label>
+              <input
+                type="number"
+                value={formData.hourlyRate}
+                onChange={(e) => handleInputChange('hourlyRate', e.target.value)}
+                disabled={!editMode}
+                min="0"
+                className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>Specialties</label>
+            <input
+              type="text"
+              value={formData.specialties.join(', ')}
+              onChange={(e) => handleSpecialtiesChange(e.target.value)}
+              disabled={!editMode}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+              placeholder="e.g., Football, Basketball, Fitness Training (comma separated)"
+            />
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>Certifications</label>
+            <input
+              type="text"
+              value={formData.certifications.join(', ')}
+              onChange={(e) => handleCertificationsChange(e.target.value)}
+              disabled={!editMode}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+              placeholder="e.g., UEFA License, NASM CPT (comma separated)"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Location */}
+      <div className='border-b pb-6 mb-6'>
+        <h3 className='font-semibold text-lg mb-4'>
+          <MapPin size={20} className='inline mr-2' />
+          Location
+        </h3>
+        
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>City</label>
+            <input
+              type="text"
+              value={formData.location.city}
+              onChange={(e) => handleLocationChange('city', e.target.value)}
+              disabled={!editMode}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+            />
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>State</label>
+            <input
+              type="text"
+              value={formData.location.state}
+              onChange={(e) => handleLocationChange('state', e.target.value)}
+              disabled={!editMode}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+            />
+          </div>
+
+          <div>
+            <label className='block text-sm font-medium text-gray-700 mb-1'>Country</label>
+            <input
+              type="text"
+              value={formData.location.country}
+              onChange={(e) => handleLocationChange('country', e.target.value)}
+              disabled={!editMode}
+              className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50'
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Availability Settings */}
+      <div className='pb-6 mb-6'>
+        <h3 className='font-semibold text-lg mb-4 flex items-center gap-2'>
+          <Clock size={20} />
+          Availability Settings
+        </h3>
+        <p className='text-gray-600 text-sm mb-4'>
+          Set your weekly availability to help clients book sessions at convenient times.
+        </p>
+        
+        <div className="space-y-4">
+          {Object.entries(availability).map(([day, settings]) => (
+            <div key={day} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+              {/* Day Header with Toggle */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-4">
+                  <span className="font-medium text-gray-900 w-24">{day}</span>
+                  
+                  {/* Enhanced Toggle Switch */}
+                  <button
+                    onClick={() => editMode && toggleDay(day)}
+                    disabled={!editMode}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                      settings.enabled ? 'bg-[#946BEF]' : 'bg-gray-300'
+                    } ${!editMode ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+                        settings.enabled ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                  
+                  <span className={`text-sm ${settings.enabled ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
+                    {settings.enabled ? 'Available' : 'Not Available'}
+                  </span>
+                </div>
+
+                {/* Quick Actions */}
+                {editMode && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        if (settings.enabled) {
+                          setAvailability(prev => ({
+                            ...prev,
+                            [day]: { ...prev[day], startTime: '09:00', endTime: '17:00' }
+                          }));
+                        }
+                      }}
+                      disabled={!settings.enabled}
+                      className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:opacity-50"
+                    >
+                      9-5
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (settings.enabled) {
+                          setAvailability(prev => ({
+                            ...prev,
+                            [day]: { ...prev[day], startTime: '08:00', endTime: '20:00' }
+                          }));
+                        }
+                      }}
+                      disabled={!settings.enabled}
+                      className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 disabled:opacity-50"
+                    >
+                      8-8
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Time Selection */}
+              {settings.enabled && (
+                <div className="ml-8 flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <label className="text-sm font-medium text-gray-600">From:</label>
+                    <select
+                      value={settings.startTime}
+                      onChange={(e) => editMode && updateTime(day, 'startTime', e.target.value)}
+                      disabled={!editMode}
+                      className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 text-sm"
+                    >
+                      {timeOptions.map(time => (
+                        <option key={time} value={time}>
+                          {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          })}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <label className="text-sm font-medium text-gray-600">To:</label>
+                    <select
+                      value={settings.endTime}
+                      onChange={(e) => editMode && updateTime(day, 'endTime', e.target.value)}
+                      disabled={!editMode}
+                      className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 text-sm"
+                    >
+                      {timeOptions.map(time => (
+                        <option key={time} value={time}>
+                          {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                          })}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Duration Display */}
+                  <div className="text-sm text-gray-500">
+                    ({(() => {
+                      const start = new Date(`2000-01-01T${settings.startTime}`);
+                      const end = new Date(`2000-01-01T${settings.endTime}`);
+                      const diff = (end - start) / (1000 * 60 * 60);
+                      return `${diff}h`;
+                    })()})
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Availability Summary */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <h4 className="font-medium text-gray-800 mb-3">Current Availability Summary:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+            {Object.entries(availability).map(([day, settings]) => (
+              <div key={day} className="flex justify-between">
+                <strong>{day}:</strong>
+                <span className={settings.enabled ? 'text-green-600' : 'text-gray-400'}>
+                  {settings.enabled 
+                    ? `${new Date(`2000-01-01T${settings.startTime}`).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                      })} - ${new Date(`2000-01-01T${settings.endTime}`).toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                      })}`
+                    : 'Not available'
+                  }
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Setup Options */}
+        {editMode && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <h4 className="font-medium text-blue-800 mb-3">Quick Setup:</h4>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  const weekdaySchedule = { enabled: true, startTime: '09:00', endTime: '17:00' };
+                  setAvailability(prev => ({
+                    ...prev,
+                    Monday: weekdaySchedule,
+                    Tuesday: weekdaySchedule,
+                    Wednesday: weekdaySchedule,
+                    Thursday: weekdaySchedule,
+                    Friday: weekdaySchedule,
+                    Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+                    Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
+                  }));
+                }}
+                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+              >
+                Weekdays 9-5
+              </button>
+              
+              <button
+                onClick={() => {
+                  const fullSchedule = { enabled: true, startTime: '08:00', endTime: '20:00' };
+                  setAvailability(prev => ({
+                    Monday: fullSchedule,
+                    Tuesday: fullSchedule,
+                    Wednesday: fullSchedule,
+                    Thursday: fullSchedule,
+                    Friday: fullSchedule,
+                    Saturday: fullSchedule,
+                    Sunday: fullSchedule
+                  }));
+                }}
+                className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+              >
+                All Week 8-8
+              </button>
+              
+              <button
+                onClick={() => {
+                  const weekend = { enabled: true, startTime: '10:00', endTime: '18:00' };
+                  setAvailability(prev => ({
+                    ...prev,
+                    Saturday: weekend,
+                    Sunday: weekend
+                  }));
+                }}
+                className="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition-colors"
+              >
+                Weekend 10-6
+              </button>
+              
+              <button
+                onClick={() => {
+                  setAvailability({
+                    Monday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+                    Tuesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+                    Wednesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+                    Thursday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+                    Friday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+                    Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+                    Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
+                  });
+                }}
+                className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Action Buttons */}
+      {editMode && (
+        <div className='flex gap-x-4'>
+          <button
+            onClick={() => setEditMode(false)}
+            className='border-2 border-[#946BEF] text-[#946BEF] px-8 py-2 rounded-lg hover:bg-purple-50 transition-colors'
+          >
+            Cancel
+          </button>
+          <button
+            onClick={updateProfile}
+            disabled={saving}
+            className='bg-[#946BEF] text-white px-8 py-2 rounded-lg hover:bg-[#7a3bc4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2'
+          >
+            {saving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save size={16} />
+                Save Changes
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;

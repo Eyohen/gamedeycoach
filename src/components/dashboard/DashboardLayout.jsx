@@ -87,21 +87,16 @@ const DashboardLayout = ({ children }) => {
 
   // Menu items configuration
   const menuItems = [
-    { path: "/", title: "Dashboard", icon: <LayoutDashboard size={20} /> },
-     { path: "/sessions", title: "Sessions", icon:<Watch /> },
-    // { path: "/users", title: "Users", icon: <img src={community} size={25} /> },
-   
+    { path: "/dashboard", title: "Dashboard", icon: <LayoutDashboard size={20} /> },
+    { path: "/bookings", title: "Bookings", icon: <img src={facilities} size={25} /> },
+    { path: "/sessions", title: "Sessions", icon:<Watch /> },
+    { path: "/teams", title: "Teams", icon: <img src={bookings} size={25} /> },  
     { path: "/communities", title: "Community", icon: <img src={community} size={25} /> },
-     { path: "/events", title: "Events", icon: <img src={community} size={25} /> },
+    { path: "/events", title: "Events", icon: <img src={community} size={25} /> },
     { path: "/financial-overview", title: "Financial Overview", icon: <WalletMinimal /> },
-     { path: "/get-paid", title: "Get Paid", icon: <WalletMinimal /> },
+    { path: "/get-paid", title: "Get Paid", icon: <WalletMinimal /> },
     { path: "/reviews", title: "Reviews", icon: <WalletMinimal /> },
-    // { path: "/bookings", title: "Bookings", icon: <img src={facilities} size={25} /> },
-    // { path: "/teams", title: "Teams", icon: <img src={bookings} size={25} /> },  
-    // { path: "/transaction-history", title: "Transaction History", icon: <img src={financialoverview} size={25} /> },
-    // { path: "/reviews", title: "Reviews", icon: <img src={getpaid} size={25} /> },  
     { path: "/profile", title: "Profile", icon: <img src={reviews} size={25} /> },
-    // { path: "/settings", title: "Profile", icon: <img src={profile} size={25} /> },
 
   ];
 
