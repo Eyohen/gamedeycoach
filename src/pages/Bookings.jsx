@@ -1,580 +1,4 @@
-// // pages/Bookings.jsx - Integrated with Backend for coach page
-// import React, { useState, useEffect } from 'react';
-// import {
-//   Calendar,
-//   Clock,
-//   User,
-//   MapPin,
-//   DollarSign,
-//   Eye,
-//   CheckCircle,
-//   XCircle,
-//   AlertCircle,
-//   RefreshCw,
-//   Filter,
-//   Search,
-//   ChevronDown
-// } from 'lucide-react';
-// import axios from 'axios';
-// import { URL } from '../url';
-// import { useAuth } from '../context/AuthContext';
-// import { useNavigate } from 'react-router-dom';
-
-// const Bookings = () => {
-//   const { user } = useAuth();
-//   const navigate = useNavigate();
-//   const [bookings, setBookings] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState('');
-//   const [activeFilter, setActiveFilter] = useState('all');
-//   const [searchTerm, setSearchTerm] = useState('');
-//   const [dateFilter, setDateFilter] = useState('');
-//   const [statusFilter, setStatusFilter] = useState('');
-//   const [pagination, setPagination] = useState({
-//     page: 1,
-//     limit: 10,
-//     total: 0,
-//     pages: 0
-//   });
-
-//   // Filter options
-//   const statusOptions = [
-//     { value: '', label: 'All Status' },
-//     { value: 'pending', label: 'Pending' },
-//     { value: 'confirmed', label: 'Confirmed' },
-//     { value: 'cancelled', label: 'Cancelled' },
-//     { value: 'completed', label: 'Completed' },
-//     { value: 'no_show', label: 'No Show' }
-//   ];
-
-//   // Fetch bookings from API - Updated for coach
-//   const fetchBookings = async () => {
-//     try {
-//       setLoading(true);
-//       setError('');
-      
-//       const token = localStorage.getItem('access_token');
-//       if (!token) {
-//         setError('Please login to view bookings');
-//         return;
-//       }
-
-//       const params = {
-//         page: pagination.page,
-//         limit: pagination.limit
-//       };
-      
-//       if (statusFilter) params.status = statusFilter;
-//       if (dateFilter) {
-//         params.startDate = dateFilter;
-//         params.endDate = dateFilter;
-//       }
-
-//       // Using coach endpoint instead of facility
-//       const response = await axios.get(`${URL}/api/coaches/profile/bookings`, {
-//         headers: { 'Authorization': `Bearer ${token}` },
-//         params
-//       });
-      
-//       if (response.data.success) {
-//         setBookings(response.data.data);
-//         setPagination(response.data.pagination || pagination);
-//       }
-//     } catch (err) {
-//       console.error('Error fetching bookings:', err);
-//       setError(err.response?.data?.message || 'Failed to fetch bookings');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // Update booking status
-//   const updateBookingStatus = async (bookingId, status, reason = '') => {
-//     try {
-//       const token = localStorage.getItem('access_token');
-//       if (!token) {
-//         setError('Please login to update booking status');
-//         return;
-//       }
-
-//       const response = await axios.patch(
-//         `${URL}/api/bookings/${bookingId}/status`,
-//         { status, cancellationReason: reason },
-//         { headers: { 'Authorization': `Bearer ${token}` } }
-//       );
-
-//       if (response.data.success) {
-//         // Update booking in local state
-//         setBookings(prev => 
-//           prev.map(booking => 
-//             booking.id === bookingId 
-//               ? { ...booking, status, cancellationReason: reason }
-//               : booking
-//           )
-//         );
-        
-//         // Show success message
-//         alert(`Booking ${status} successfully`);
-//       }
-//     } catch (err) {
-//       console.error('Error updating booking status:', err);
-//       alert(err.response?.data?.message || 'Failed to update booking status');
-//     }
-//   };
-
-//   // Handle status change
-//   const handleStatusChange = (booking, newStatus) => {
-//     if (newStatus === 'cancelled') {
-//       const reason = prompt('Please provide a reason for cancellation:');
-//       if (reason !== null) { // User didn't cancel the prompt
-//         updateBookingStatus(booking.id, newStatus, reason);
-//       }
-//     } else {
-//       const confirmMessage = `Are you sure you want to ${newStatus} this booking?`;
-//       if (window.confirm(confirmMessage)) {
-//         updateBookingStatus(booking.id, newStatus);
-//       }
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchBookings();
-//   }, [pagination.page, statusFilter, dateFilter]);
-
-//   // Debounced search
-//   useEffect(() => {
-//     const timeoutId = setTimeout(() => {
-//       fetchBookings();
-//     }, 500);
-
-//     return () => clearTimeout(timeoutId);
-//   }, [searchTerm]);
-
-//   // Get status color
-//   const getStatusColor = (status) => {
-//     switch (status) {
-//       case 'confirmed':
-//         return 'bg-green-100 text-green-800 border-green-200';
-//       case 'pending':
-//         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-//       case 'cancelled':
-//         return 'bg-red-100 text-red-800 border-red-200';
-//       case 'completed':
-//         return 'bg-blue-100 text-blue-800 border-blue-200';
-//       case 'no_show':
-//         return 'bg-gray-100 text-gray-800 border-gray-200';
-//       default:
-//         return 'bg-gray-100 text-gray-800 border-gray-200';
-//     }
-//   };
-
-//   // Get status icon
-//   const getStatusIcon = (status) => {
-//     switch (status) {
-//       case 'confirmed':
-//         return <CheckCircle size={16} className="text-green-600" />;
-//       case 'pending':
-//         return <Clock size={16} className="text-yellow-600" />;
-//       case 'cancelled':
-//         return <XCircle size={16} className="text-red-600" />;
-//       case 'completed':
-//         return <CheckCircle size={16} className="text-blue-600" />;
-//       case 'no_show':
-//         return <AlertCircle size={16} className="text-gray-600" />;
-//       default:
-//         return <AlertCircle size={16} className="text-gray-600" />;
-//     }
-//   };
-
-//   // Format date and time
-//   const formatDateTime = (dateString) => {
-//     const date = new Date(dateString);
-//     return {
-//       date: date.toLocaleDateString('en-US', { 
-//         year: 'numeric', 
-//         month: 'short', 
-//         day: 'numeric' 
-//       }),
-//       time: date.toLocaleTimeString('en-US', { 
-//         hour: '2-digit', 
-//         minute: '2-digit',
-//         hour12: true 
-//       })
-//     };
-//   };
-
-//   // Format booking ID
-//   const formatBookingId = (id) => {
-//     return `#COACH-${id.slice(-8).toUpperCase()}`;
-//   };
-
-//   // Filter bookings based on search term
-//   const filteredBookings = bookings.filter(booking => {
-//     if (!searchTerm) return true;
-    
-//     const searchLower = searchTerm.toLowerCase();
-//     const userName = booking.User ? `${booking.User.firstName} ${booking.User.lastName}`.toLowerCase() : '';
-//     const bookingId = formatBookingId(booking.id).toLowerCase();
-//     const facilityName = booking.Facility?.name?.toLowerCase() || '';
-    
-//     return userName.includes(searchLower) || 
-//            bookingId.includes(searchLower) || 
-//            facilityName.includes(searchLower);
-//   });
-
-//   // Handle page change
-//   const handlePageChange = (newPage) => {
-//     setPagination(prev => ({ ...prev, page: newPage }));
-//   };
-
-//   if (loading && bookings.length === 0) {
-//     return (
-//       <div className="flex justify-center items-center h-64">
-//         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7042D2]"></div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="container mx-auto px-4">
-//       {/* Header with filters */}
-//       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-//         {/* Coach Filter */}
-//         <div className='bg-gray-100 w-full lg:w-[400px] p-2 rounded-lg'>
-//           <div className='flex gap-x-2'>
-//             <button
-//               className={`px-3 py-1 rounded-lg transition-colors flex-1 ${
-//                 activeFilter === 'all'
-//                   ? 'bg-white text-black'
-//                   : 'bg-transparent text-gray-600 hover:bg-gray-200'
-//               }`}
-//               onClick={() => setActiveFilter('all')}
-//             >
-//               All Bookings
-//             </button>
-//             <button
-//               className={`px-3 py-1 rounded-lg transition-colors flex-1 ${
-//                 activeFilter === 'today'
-//                   ? 'bg-white text-black'
-//                   : 'bg-transparent text-gray-600 hover:bg-gray-200'
-//               }`}
-//               onClick={() => setActiveFilter('today')}
-//             >
-//               Today
-//             </button>
-//             <button
-//               className={`px-3 py-1 rounded-lg transition-colors flex-1 ${
-//                 activeFilter === 'upcoming'
-//                   ? 'bg-white text-black'
-//                   : 'bg-transparent text-gray-600 hover:bg-gray-200'
-//               }`}
-//               onClick={() => setActiveFilter('upcoming')}
-//             >
-//               Upcoming
-//             </button>
-//           </div>
-//         </div>
-
-//         {/* Search and Filters */}
-//         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-//           {/* Search */}
-//           <div className="relative">
-//             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-//             <input
-//               type="text"
-//               placeholder="Search by user, booking ID, or facility..."
-//               value={searchTerm}
-//               onChange={(e) => setSearchTerm(e.target.value)}
-//               className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full sm:w-64"
-//             />
-//           </div>
-
-//           {/* Status Filter */}
-//           <select
-//             value={statusFilter}
-//             onChange={(e) => setStatusFilter(e.target.value)}
-//             className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-//           >
-//             {statusOptions.map(option => (
-//               <option key={option.value} value={option.value}>
-//                 {option.label}
-//               </option>
-//             ))}
-//           </select>
-
-//           {/* Date Filter */}
-//           <input
-//             type="date"
-//             value={dateFilter}
-//             onChange={(e) => setDateFilter(e.target.value)}
-//             className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-//           />
-
-//           {/* Refresh Button */}
-//           <button
-//             onClick={fetchBookings}
-//             className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-//           >
-//             <RefreshCw size={16} />
-//             Refresh
-//           </button>
-//         </div>
-//       </div>
-
-//       {/* Error Display */}
-//       {error && (
-//         <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
-//           <div className="flex items-center">
-//             <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
-//             <span className="text-sm text-red-700">{error}</span>
-//           </div>
-//         </div>
-//       )}
-//       {/* Bookings Table */}
-//       <div className="py-6 max-w-full">
-//         <div className="overflow-x-auto bg-white rounded-xl shadow-md border border-black border-r-[6px] border-b-[4px]">
-//           <table className="min-w-full">
-//             <thead className="bg-gray-50">
-//               <tr>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 tracking-wider">
-//                   Booking ID
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 tracking-wider">
-//                   User
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 tracking-wider">
-//                   Facility
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 tracking-wider">
-//                   Date & Time
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 tracking-wider">
-//                   Duration
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 tracking-wider">
-//                   Payment
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 tracking-wider">
-//                   Status
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 tracking-wider">
-//                   Actions
-//                 </th>
-//               </tr>
-//             </thead>
-//             <tbody className="bg-white divide-y divide-gray-200">
-//               {filteredBookings.length > 0 ? (
-//                 filteredBookings.map((booking) => {
-//                   const startTime = formatDateTime(booking.startTime);
-//                   const endTime = formatDateTime(booking.endTime);
-//                   const duration = Math.round((new Date(booking.endTime) - new Date(booking.startTime)) / (1000 * 60 * 60));
-                  
-//                   return (
-//                     <tr key={booking.id} className="hover:bg-gray-50">
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className="text-sm font-medium text-gray-900">
-//                           {formatBookingId(booking.id)}
-//                         </div>
-//                         <div className="text-sm text-gray-500">
-//                           {booking.bookingType}
-//                         </div>
-//                       </td>
-
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className="flex items-center">
-//                           <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-//                             <User size={16} className="text-purple-600" />
-//                           </div>
-//                           <div>
-//                             <div className="text-sm font-medium text-gray-900">
-//                               {booking.User ? `${booking.User.firstName} ${booking.User.lastName}` : 'N/A'}
-//                             </div>
-//                             <div className="text-sm text-gray-500">
-//                               {booking.User?.phone || 'No phone'}
-//                             </div>
-//                           </div>
-//                         </div>
-//                       </td>
-
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className="text-sm text-gray-900">
-//                           {booking.Facility ? (
-//                             <>
-//                               <div className="font-medium">{booking.Facility.name}</div>
-//                               <div className="text-gray-500">{booking.Facility.address}</div>
-//                             </>
-//                           ) : (
-//                             <span className="text-gray-400">No facility</span>
-//                           )}
-//                         </div>
-//                       </td>
-
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className="text-sm text-gray-900">
-//                           <div className="flex items-center">
-//                             <Calendar size={14} className="mr-1 text-gray-400" />
-//                             {startTime.date}
-//                           </div>
-//                           <div className="flex items-center mt-1">
-//                             <Clock size={14} className="mr-1 text-gray-400" />
-//                             {startTime.time} - {endTime.time}
-//                           </div>
-//                         </div>
-//                       </td>
-
-//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-//                         {duration} hour{duration !== 1 ? 's' : ''}
-//                       </td>
-
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className="text-sm font-medium text-gray-900">
-//                           ₦{parseFloat(booking.totalAmount).toLocaleString()}
-//                         </div>
-//                         <div className={`text-xs ${
-//                           booking.paymentStatus === 'paid' ? 'text-green-600' : 'text-red-600'
-//                         }`}>
-//                           {booking.paymentStatus || 'pending'}
-//                         </div>
-//                       </td>
-
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(booking.status)}`}>
-//                           {getStatusIcon(booking.status)}
-//                           <span className="ml-1 capitalize">{booking.status}</span>
-//                         </div>
-//                       </td>
-
-//                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-//                         <div className="flex items-center space-x-2">
-//                           <button
-//                             onClick={() => alert(`Viewing details for booking ${booking.id}`)}
-//                             className="text-purple-600 hover:text-purple-900 flex items-center"
-//                             title="View Details"
-//                           >
-//                             <Eye size={16} />
-//                           </button>
-
-//                           {/* Status Actions */}
-//                           {booking.status === 'pending' && (
-//                             <>
-//                               <button
-//                                 onClick={() => handleStatusChange(booking, 'confirmed')}
-//                                 className="text-green-600 hover:text-green-900 flex items-center"
-//                                 title="Confirm Booking"
-//                               >
-//                                 <CheckCircle size={16} />
-//                               </button>
-//                               <button
-//                                 onClick={() => handleStatusChange(booking, 'cancelled')}
-//                                 className="text-red-600 hover:text-red-900 flex items-center"
-//                                 title="Cancel Booking"
-//                               >
-//                                 <XCircle size={16} />
-//                               </button>
-//                             </>
-//                           )}
-
-//                           {booking.status === 'confirmed' && (
-//                             <>
-//                               <button
-//                                 onClick={() => handleStatusChange(booking, 'completed')}
-//                                 className="text-blue-600 hover:text-blue-900 flex items-center"
-//                                 title="Mark as Completed"
-//                               >
-//                                 <CheckCircle size={16} />
-//                               </button>
-//                               <button
-//                                 onClick={() => handleStatusChange(booking, 'no_show')}
-//                                 className="text-gray-600 hover:text-gray-900 flex items-center"
-//                                 title="Mark as No Show"
-//                               >
-//                                 <AlertCircle size={16} />
-//                               </button>
-//                             </>
-//                           )}
-//                         </div>
-//                       </td>
-//                     </tr>
-//                   );
-//                 })
-//               ) : (
-//                 <tr>
-//                   <td colSpan="8" className="px-6 py-12 text-center">
-//                     <div className="flex flex-col items-center">
-//                       <Calendar size={48} className="text-gray-400 mb-4" />
-//                       <h3 className="text-lg font-medium text-gray-900 mb-2">No bookings found</h3>
-//                       <p className="text-gray-500">
-//                         {searchTerm || statusFilter || dateFilter 
-//                           ? 'Try adjusting your search or filters' 
-//                           : 'No bookings have been made yet'
-//                         }
-//                       </p>
-//                     </div>
-//                   </td>
-//                 </tr>
-//               )}
-//             </tbody>
-//           </table>
-//         </div>
-
-//         {/* Pagination */}
-//         {pagination.pages > 1 && (
-//           <div className="flex items-center justify-between mt-6">
-//             <div className="text-sm text-gray-700">
-//               Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} results
-//             </div>
-            
-//             <div className="flex items-center space-x-2">
-//               <button
-//                 onClick={() => handlePageChange(pagination.page - 1)}
-//                 disabled={pagination.page === 1}
-//                 className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-//               >
-//                 Previous
-//               </button>
-              
-//               {[...Array(Math.min(5, pagination.pages))].map((_, index) => {
-//                 const pageNumber = pagination.page - 2 + index;
-//                 if (pageNumber < 1 || pageNumber > pagination.pages) return null;
-                
-//                 return (
-//                   <button
-//                     key={pageNumber}
-//                     onClick={() => handlePageChange(pageNumber)}
-//                     className={`px-3 py-1 border rounded-md ${
-//                       pageNumber === pagination.page
-//                         ? 'bg-purple-500 text-white border-purple-500'
-//                         : 'border-gray-300 hover:bg-gray-50'
-//                     }`}
-//                   >
-//                     {pageNumber}
-//                   </button>
-//                 );
-//               })}
-              
-//               <button
-//                 onClick={() => handlePageChange(pagination.page + 1)}
-//                 disabled={pagination.page === pagination.pages}
-//                 className="px-3 py-1 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-//               >
-//                 Next
-//               </button>
-//             </div>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Bookings;
-
-
-
-
-
-
-// pages/Bookings.jsx - Mobile Responsive Version
+// pages/Bookings.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Calendar,
@@ -781,19 +205,74 @@ const Bookings = () => {
     return `#COACH-${id.slice(-8).toUpperCase()}`;
   };
 
+
+// Check if a booking is scheduled for today
+const isBookingToday = (bookingStartTime) => {
+  const today = new Date();
+  const bookingDate = new Date(bookingStartTime);
+  
+  return today.toDateString() === bookingDate.toDateString();
+};
+
+// Check if a booking is scheduled for future dates
+const isBookingUpcoming = (bookingStartTime) => {
+  const today = new Date();
+  const bookingDate = new Date(bookingStartTime);
+  
+  // Reset time to compare only dates
+  today.setHours(0, 0, 0, 0);
+  bookingDate.setHours(0, 0, 0, 0);
+  
+  return bookingDate > today;
+};
+
+
+// Optional: Add booking counts for each tab (add this after your existing state declarations)
+const getTodayCount = () => bookings.filter(booking => isBookingToday(booking.startTime)).length;
+const getUpcomingCount = () => bookings.filter(booking => isBookingUpcoming(booking.startTime)).length;
+
+
   // Filter bookings based on search term
-  const filteredBookings = bookings.filter(booking => {
-    if (!searchTerm) return true;
+  // const filteredBookings = bookings.filter(booking => {
+  //   if (!searchTerm) return true;
     
+  //   const searchLower = searchTerm.toLowerCase();
+  //   const userName = booking.User ? `${booking.User.firstName} ${booking.User.lastName}`.toLowerCase() : '';
+  //   const bookingId = formatBookingId(booking.id).toLowerCase();
+  //   const facilityName = booking.Facility?.name?.toLowerCase() || '';
+    
+  //   return userName.includes(searchLower) || 
+  //          bookingId.includes(searchLower) || 
+  //          facilityName.includes(searchLower);
+  // });
+
+  const filteredBookings = bookings.filter(booking => {
+  // First apply search term filter
+  let matchesSearch = true;
+  if (searchTerm) {
     const searchLower = searchTerm.toLowerCase();
     const userName = booking.User ? `${booking.User.firstName} ${booking.User.lastName}`.toLowerCase() : '';
     const bookingId = formatBookingId(booking.id).toLowerCase();
     const facilityName = booking.Facility?.name?.toLowerCase() || '';
     
-    return userName.includes(searchLower) || 
-           bookingId.includes(searchLower) || 
-           facilityName.includes(searchLower);
-  });
+    matchesSearch = userName.includes(searchLower) || 
+                   bookingId.includes(searchLower) || 
+                   facilityName.includes(searchLower);
+  }
+  
+  if (!matchesSearch) return false;
+  
+  // Then apply date-based active filter
+  switch (activeFilter) {
+    case 'today':
+      return isBookingToday(booking.startTime);
+    case 'upcoming':
+      return isBookingUpcoming(booking.startTime);
+    case 'all':
+    default:
+      return true;
+  }
+});
 
   // Handle page change
   const handlePageChange = (newPage) => {
@@ -813,7 +292,7 @@ const Bookings = () => {
       {/* Mobile-Responsive Header with filters */}
       <div className="flex flex-col gap-4 mb-6">
         {/* Coach Filter Tabs - Mobile Responsive */}
-        <div className='bg-gray-100 w-full p-2 rounded-lg'>
+        {/* <div className='bg-gray-100 w-full p-2 rounded-lg'>
           <div className='grid grid-cols-3 gap-2'>
             <button
               className={`px-3 py-2 rounded-lg transition-colors text-sm ${
@@ -846,7 +325,50 @@ const Bookings = () => {
               Upcoming
             </button>
           </div>
-        </div>
+        </div> */}
+        <div className='bg-gray-100 w-full p-2 rounded-lg'>
+  <div className='grid grid-cols-3 gap-2'>
+    <button
+      className={`px-3 py-2 rounded-lg transition-colors text-sm relative ${
+        activeFilter === 'all'
+          ? 'bg-white text-black'
+          : 'bg-transparent text-gray-600 hover:bg-gray-200'
+      }`}
+      onClick={() => setActiveFilter('all')}
+    >
+      All Bookings
+      <span className="ml-1 text-xs bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded-full">
+        {bookings.length}
+      </span>
+    </button>
+    <button
+      className={`px-3 py-2 rounded-lg transition-colors text-sm relative ${
+        activeFilter === 'today'
+          ? 'bg-white text-black'
+          : 'bg-transparent text-gray-600 hover:bg-gray-200'
+      }`}
+      onClick={() => setActiveFilter('today')}
+    >
+      Today
+      <span className="ml-1 text-xs bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded-full">
+        {getTodayCount()}
+      </span>
+    </button>
+    <button
+      className={`px-3 py-2 rounded-lg transition-colors text-sm relative ${
+        activeFilter === 'upcoming'
+          ? 'bg-white text-black'
+          : 'bg-transparent text-gray-600 hover:bg-gray-200'
+      }`}
+      onClick={() => setActiveFilter('upcoming')}
+    >
+      Upcoming
+      <span className="ml-1 text-xs bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded-full">
+        {getUpcomingCount()}
+      </span>
+    </button>
+  </div>
+</div>
 
         {/* Mobile Search Bar */}
         <div className="relative">
@@ -1007,7 +529,8 @@ const Bookings = () => {
                 {/* Card Actions */}
                 <div className="mt-4 flex gap-2">
                   <button
-                    onClick={() => alert(`Viewing details for booking ${booking.id}`)}
+                  onClick={() => navigate(`/bookings/${booking.id}`)}
+                
                     className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-50 transition-colors text-sm"
                   >
                     <Eye size={14} />
@@ -1182,7 +705,8 @@ const Bookings = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => alert(`Viewing details for booking ${booking.id}`)}
+                            onClick={() => navigate(`/bookings/${booking.id}`)}
+                            // onClick={() => alert(`Viewing details for booking ${booking.id}`)}
                             className="text-purple-600 hover:text-purple-900 flex items-center"
                             title="View Details"
                           >

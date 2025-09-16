@@ -288,10 +288,9 @@ const DashboardLayout = ({ children }) => {
   const menuItems = [
     { path: "/dashboard", title: "Dashboard", icon: <LayoutDashboard size={20} /> },
     { path: "/bookings", title: "Bookings", icon: <img src={facilities} alt="facilities" className="w-5 h-5" /> },
-    { path: "/sessions", title: "Sessions", icon: <Watch size={20} /> },
     { path: "/teams", title: "Teams", icon: <img src={bookings} alt="bookings" className="w-5 h-5" /> },  
     { path: "/communities", title: "Community", icon: <img src={community} alt="community" className="w-5 h-5" /> },
-    { path: "/events", title: "Events", icon: <img src={community} alt="events" className="w-5 h-5" /> },
+    // { path: "/events", title: "Events", icon: <img src={community} alt="events" className="w-5 h-5" /> },
     { path: "/financial-overview", title: "Financial Overview", icon: <WalletMinimal size={20} /> },
     { path: "/get-paid", title: "Get Paid", icon: <WalletMinimal size={20} /> },
     { path: "/reviews", title: "Reviews", icon: <WalletMinimal size={20} /> },
@@ -414,6 +413,7 @@ const DashboardLayout = ({ children }) => {
             </div>
             
             <div className="flex items-center gap-2 lg:gap-4">
+               <p>Coach</p>
               <button className="p-2 text-gray-500 hover:text-black rounded-full">
                 <Bell size={18} className="lg:w-5 lg:h-5" />
               </button>

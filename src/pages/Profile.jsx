@@ -35,7 +35,7 @@
 //     lastName: '',
 //     email: '',
 //     phone: '',
-    
+
 //     // Coach specific info
 //     bio: '',
 //     experience: '',
@@ -65,7 +65,7 @@
 //     try {
 //       setLoading(true);
 //       setError('');
-      
+
 //       const token = localStorage.getItem('access_token');
 //       if (!token) {
 //         setError('Please login to view profile');
@@ -79,7 +79,7 @@
 //       if (response.data.success) {
 //         const coachData = response.data.data;
 //         setProfile(coachData);
-        
+
 //         // Update form data
 //         setFormData({
 //           firstName: coachData.User?.firstName || '',
@@ -113,7 +113,7 @@
 //       setSaving(true);
 //       setError('');
 //       setSuccessMessage('');
-      
+
 //       const token = localStorage.getItem('access_token');
 //       if (!token) {
 //         setError('Please login to update profile');
@@ -138,7 +138,7 @@
 //       if (response.data.success) {
 //         setSuccessMessage('Profile updated successfully!');
 //         setEditMode(false);
-        
+
 //         // Update user context if user data changed
 //         if (formData.firstName !== user?.firstName || formData.lastName !== user?.lastName) {
 //           updateUser({
@@ -146,10 +146,10 @@
 //             lastName: formData.lastName
 //           });
 //         }
-        
+
 //         // Refresh profile data
 //         await fetchProfile();
-        
+
 //         // Clear success message after 3 seconds
 //         setTimeout(() => setSuccessMessage(''), 3000);
 //       }
@@ -374,7 +374,7 @@
 //       {/* Professional Information */}
 //       <div className='border-b pb-6 mb-6'>
 //         <h3 className='font-semibold text-lg mb-4'>Professional Information</h3>
-        
+
 //         <div className='space-y-4'>
 //           <div>
 //             <label className='block text-sm font-medium text-gray-700 mb-1'>Bio</label>
@@ -453,7 +453,7 @@
 //           <MapPin size={20} className='inline mr-2' />
 //           Location
 //         </h3>
-        
+
 //         <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
 //           <div>
 //             <label className='block text-sm font-medium text-gray-700 mb-1'>City</label>
@@ -490,76 +490,238 @@
 //         </div>
 //       </div>
 
-//       {/* Availability */}
+//       {/* Availability Settings */}
 //       <div className='pb-6 mb-6'>
-//         <h3 className='font-semibold text-lg mb-4'>Availability</h3>
-        
+//         <h3 className='font-semibold text-lg mb-4 flex items-center gap-2'>
+//           <Clock size={20} />
+//           Availability Settings
+//         </h3>
+//         <p className='text-gray-600 text-sm mb-4'>
+//           Set your weekly availability to help clients book sessions at convenient times.
+//         </p>
+
 //         <div className="space-y-4">
 //           {Object.entries(availability).map(([day, settings]) => (
-//             <div key={day} className="flex items-center justify-between p-3 gap-x-6 border border-gray-200 rounded-lg hover:bg-gray-50">
-//               {/* Left Column - Day and Toggle */}
-//               <div className="flex items-center space-x-4 w-1/3">
-//                 <span className="font-medium text-gray-700 w-20">{day}</span>
-                
-//                 {/* Toggle Switch */}
-//                 <button
-//                   onClick={() => editMode && toggleDay(day)}
-//                   disabled={!editMode}
-//                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-//                     settings.enabled ? 'bg-[#946BEF]' : 'bg-gray-300'
-//                   } ${!editMode ? 'opacity-50 cursor-not-allowed' : ''}`}
-//                 >
-//                   <span
-//                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-//                       settings.enabled ? 'translate-x-6' : 'translate-x-1'
-//                     }`}
-//                   />
-//                 </button>
-//               </div>
+//             <div key={day} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+//               {/* Day Header with Toggle */}
+//               <div className="flex items-center justify-between mb-3">
+//                 <div className="flex items-center space-x-4">
+//                   <span className="font-medium text-gray-900 w-24">{day}</span>
 
-//               {/* Right Column - Time Selection */}
-//               <div className="flex items-center space-x-4 w-2/3">
-//                 {settings.enabled ? (
-//                   <>
-//                     <div className="flex items-center space-x-2">
-//                       <label className="text-sm text-gray-600">From:</label>
-//                       <select
-//                         value={settings.startTime}
-//                         onChange={(e) => editMode && updateTime(day, 'startTime', e.target.value)}
-//                         disabled={!editMode}
-//                         className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50"
-//                       >
-//                         {timeOptions.map(time => (
-//                           <option key={time} value={time}>
-//                             {time}
-//                           </option>
-//                         ))}
-//                       </select>
-//                     </div>
+//                   {/* Enhanced Toggle Switch */}
+//                   <button
+//                     onClick={() => editMode && toggleDay(day)}
+//                     disabled={!editMode}
+//                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+//                       settings.enabled ? 'bg-[#946BEF]' : 'bg-gray-300'
+//                     } ${!editMode ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+//                   >
+//                     <span
+//                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
+//                         settings.enabled ? 'translate-x-6' : 'translate-x-1'
+//                       }`}
+//                     />
+//                   </button>
 
-//                     <div className="flex items-center space-x-2">
-//                       <label className="text-sm text-gray-600">To:</label>
-//                       <select
-//                         value={settings.endTime}
-//                         onChange={(e) => editMode && updateTime(day, 'endTime', e.target.value)}
-//                         disabled={!editMode}
-//                         className="px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50"
-//                       >
-//                         {timeOptions.map(time => (
-//                           <option key={time} value={time}>
-//                             {time}
-//                           </option>
-//                         ))}
-//                       </select>
-//                     </div>
-//                   </>
-//                 ) : (
-//                   <span className="text-gray-400 italic">Not available</span>
+//                   <span className={`text-sm ${settings.enabled ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
+//                     {settings.enabled ? 'Available' : 'Not Available'}
+//                   </span>
+//                 </div>
+
+//                 {/* Quick Actions */}
+//                 {editMode && (
+//                   <div className="flex gap-2">
+//                     <button
+//                       onClick={() => {
+//                         if (settings.enabled) {
+//                           setAvailability(prev => ({
+//                             ...prev,
+//                             [day]: { ...prev[day], startTime: '09:00', endTime: '17:00' }
+//                           }));
+//                         }
+//                       }}
+//                       disabled={!settings.enabled}
+//                       className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:opacity-50"
+//                     >
+//                       9-5
+//                     </button>
+//                     <button
+//                       onClick={() => {
+//                         if (settings.enabled) {
+//                           setAvailability(prev => ({
+//                             ...prev,
+//                             [day]: { ...prev[day], startTime: '08:00', endTime: '20:00' }
+//                           }));
+//                         }
+//                       }}
+//                       disabled={!settings.enabled}
+//                       className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 disabled:opacity-50"
+//                     >
+//                       8-8
+//                     </button>
+//                   </div>
 //                 )}
 //               </div>
+
+//               {/* Time Selection */}
+//               {settings.enabled && (
+//                 <div className="ml-8 flex items-center space-x-4">
+//                   <div className="flex items-center space-x-2">
+//                     <label className="text-sm font-medium text-gray-600">From:</label>
+//                     <select
+//                       value={settings.startTime}
+//                       onChange={(e) => editMode && updateTime(day, 'startTime', e.target.value)}
+//                       disabled={!editMode}
+//                       className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 text-sm"
+//                     >
+//                       {timeOptions.map(time => (
+//                         <option key={time} value={time}>
+//                           {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+//                             hour: 'numeric',
+//                             minute: '2-digit',
+//                             hour12: true
+//                           })}
+//                         </option>
+//                       ))}
+//                     </select>
+//                   </div>
+
+//                   <div className="flex items-center space-x-2">
+//                     <label className="text-sm font-medium text-gray-600">To:</label>
+//                     <select
+//                       value={settings.endTime}
+//                       onChange={(e) => editMode && updateTime(day, 'endTime', e.target.value)}
+//                       disabled={!editMode}
+//                       className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-50 text-sm"
+//                     >
+//                       {timeOptions.map(time => (
+//                         <option key={time} value={time}>
+//                           {new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+//                             hour: 'numeric',
+//                             minute: '2-digit',
+//                             hour12: true
+//                           })}
+//                         </option>
+//                       ))}
+//                     </select>
+//                   </div>
+
+//                   {/* Duration Display */}
+//                   <div className="text-sm text-gray-500">
+//                     ({(() => {
+//                       const start = new Date(`2000-01-01T${settings.startTime}`);
+//                       const end = new Date(`2000-01-01T${settings.endTime}`);
+//                       const diff = (end - start) / (1000 * 60 * 60);
+//                       return `${diff}h`;
+//                     })()})
+//                   </div>
+//                 </div>
+//               )}
 //             </div>
 //           ))}
 //         </div>
+
+//         {/* Availability Summary */}
+//         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+//           <h4 className="font-medium text-gray-800 mb-3">Current Availability Summary:</h4>
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+//             {Object.entries(availability).map(([day, settings]) => (
+//               <div key={day} className="flex justify-between">
+//                 <strong>{day}:</strong>
+//                 <span className={settings.enabled ? 'text-green-600' : 'text-gray-400'}>
+//                   {settings.enabled 
+//                     ? `${new Date(`2000-01-01T${settings.startTime}`).toLocaleTimeString('en-US', {
+//                         hour: 'numeric',
+//                         minute: '2-digit',
+//                         hour12: true
+//                       })} - ${new Date(`2000-01-01T${settings.endTime}`).toLocaleTimeString('en-US', {
+//                         hour: 'numeric',
+//                         minute: '2-digit',
+//                         hour12: true
+//                       })}`
+//                     : 'Not available'
+//                   }
+//                 </span>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Quick Setup Options */}
+//         {editMode && (
+//           <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+//             <h4 className="font-medium text-blue-800 mb-3">Quick Setup:</h4>
+//             <div className="flex flex-wrap gap-2">
+//               <button
+//                 onClick={() => {
+//                   const weekdaySchedule = { enabled: true, startTime: '09:00', endTime: '17:00' };
+//                   setAvailability(prev => ({
+//                     ...prev,
+//                     Monday: weekdaySchedule,
+//                     Tuesday: weekdaySchedule,
+//                     Wednesday: weekdaySchedule,
+//                     Thursday: weekdaySchedule,
+//                     Friday: weekdaySchedule,
+//                     Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//                     Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
+//                   }));
+//                 }}
+//                 className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+//               >
+//                 Weekdays 9-5
+//               </button>
+
+//               <button
+//                 onClick={() => {
+//                   const fullSchedule = { enabled: true, startTime: '08:00', endTime: '20:00' };
+//                   setAvailability(prev => ({
+//                     Monday: fullSchedule,
+//                     Tuesday: fullSchedule,
+//                     Wednesday: fullSchedule,
+//                     Thursday: fullSchedule,
+//                     Friday: fullSchedule,
+//                     Saturday: fullSchedule,
+//                     Sunday: fullSchedule
+//                   }));
+//                 }}
+//                 className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+//               >
+//                 All Week 8-8
+//               </button>
+
+//               <button
+//                 onClick={() => {
+//                   const weekend = { enabled: true, startTime: '10:00', endTime: '18:00' };
+//                   setAvailability(prev => ({
+//                     ...prev,
+//                     Saturday: weekend,
+//                     Sunday: weekend
+//                   }));
+//                 }}
+//                 className="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition-colors"
+//               >
+//                 Weekend 10-6
+//               </button>
+
+//               <button
+//                 onClick={() => {
+//                   setAvailability({
+//                     Monday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//                     Tuesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//                     Wednesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//                     Thursday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//                     Friday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//                     Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+//                     Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
+//                   });
+//                 }}
+//                 className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+//               >
+//                 Clear All
+//               </button>
+//             </div>
+//           </div>
+//         )}
 //       </div>
 
 //       {/* Action Buttons */}
@@ -599,27 +761,26 @@
 
 
 
-
-
-// pages/Profile.jsx
-import React, { useState, useEffect } from 'react';
+// pages/Profile.jsx - Simplified with single profile photo
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { URL } from '../url';
 import { useAuth } from '../context/AuthContext';
 import profilepic from "../assets/profilepic.jpg";
-import { 
-  Save, 
-  Edit, 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
+import {
+  Save,
+  Edit,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
   DollarSign,
   Award,
   AlertCircle,
   Check,
-  RefreshCw
+  RefreshCw,
+  Camera
 } from 'lucide-react';
 
 const Profile = () => {
@@ -627,19 +788,20 @@ const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [editMode, setEditMode] = useState(false);
 
+  // File upload ref
+  const profileImageRef = useRef(null);
+
   // Form data
   const [formData, setFormData] = useState({
-    // User info
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    
-    // Coach specific info
     bio: '',
     experience: '',
     hourlyRate: '',
@@ -652,6 +814,9 @@ const Profile = () => {
     }
   });
 
+  // Profile image state
+  const [profileImage, setProfileImage] = useState(null);
+
   // Availability state
   const [availability, setAvailability] = useState({
     Monday: { enabled: false, startTime: '09:00', endTime: '17:00' },
@@ -663,12 +828,84 @@ const Profile = () => {
     Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
   });
 
+  // Upload image to Cloudinary
+  // const uploadToCloudinary = async (file) => {
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   formData.append('upload_preset', 'coach_profile_images'); // Create this preset in Cloudinary
+
+  //   const response = await axios.post(
+  //     `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+  //     formData
+  //   );
+
+  //   return response.data.secure_url;
+  // };
+
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'ml_default'); // Use default preset
+
+    const response = await axios.post(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      formData
+    );
+
+    return response.data.secure_url;
+  };
+
+
+  // Handle profile image upload
+  const handleProfileImageUpload = async (file) => {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      setError('');
+
+      // Upload to Cloudinary
+      const imageUrl = await uploadToCloudinary(file);
+
+      // Update backend
+      const token = localStorage.getItem('access_token');
+      const response = await axios.put(`${URL}/api/coaches/profile/me`, {
+        profileImage: imageUrl
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        setProfileImage(imageUrl);
+        setSuccessMessage('Profile photo updated successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error('Error uploading profile image:', err);
+      setError('Failed to upload profile photo');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   // Fetch coach profile
   const fetchProfile = async () => {
     try {
       setLoading(true);
       setError('');
-      
+
       const token = localStorage.getItem('access_token');
       if (!token) {
         setError('Please login to view profile');
@@ -682,7 +919,7 @@ const Profile = () => {
       if (response.data.success) {
         const coachData = response.data.data;
         setProfile(coachData);
-        
+
         // Update form data
         setFormData({
           firstName: coachData.User?.firstName || '',
@@ -696,6 +933,9 @@ const Profile = () => {
           certifications: coachData.certifications || [],
           location: coachData.location || { city: '', state: '', country: '' }
         });
+
+        // Update profile image
+        setProfileImage(coachData.profileImage || coachData.User?.profileImage);
 
         // Update availability if exists
         if (coachData.availability) {
@@ -716,7 +956,7 @@ const Profile = () => {
       setSaving(true);
       setError('');
       setSuccessMessage('');
-      
+
       const token = localStorage.getItem('access_token');
       if (!token) {
         setError('Please login to update profile');
@@ -741,7 +981,7 @@ const Profile = () => {
       if (response.data.success) {
         setSuccessMessage('Profile updated successfully!');
         setEditMode(false);
-        
+
         // Update user context if user data changed
         if (formData.firstName !== user?.firstName || formData.lastName !== user?.lastName) {
           updateUser({
@@ -749,10 +989,10 @@ const Profile = () => {
             lastName: formData.lastName
           });
         }
-        
+
         // Refresh profile data
         await fetchProfile();
-        
+
         // Clear success message after 3 seconds
         setTimeout(() => setSuccessMessage(''), 3000);
       }
@@ -850,13 +1090,44 @@ const Profile = () => {
 
   return (
     <div className='px-6 py-6'>
-      {/* Header */}
-      <div className='flex justify-between items-center mb-6'>
-        <div className='flex gap-3 items-center'>
-          <img src={profilepic} className='rounded-full w-24 h-24 object-cover' />
+      {/* Header with Profile Photo */}
+      <div className='flex justify-between items-start mb-6'>
+        <div className='flex gap-3 items-start'>
+          {/* Profile Photo with Upload */}
+          <div className="relative group">
+            <img
+              src={profileImage || profilepic}
+              alt="Profile"
+              className='rounded-full w-24 h-24 object-cover border-4 border-gray-200'
+            />
+
+            {/* Photo Upload Overlay */}
+            <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              onClick={() => profileImageRef.current?.click()}>
+              <Camera className="text-white" size={24} />
+            </div>
+
+            {/* Upload Indicator */}
+            {uploadingImage && (
+              <div className="absolute inset-0 bg-black bg-opacity-75 rounded-full flex items-center justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              </div>
+            )}
+
+            {/* Hidden File Input */}
+            <input
+              ref={profileImageRef}
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleProfileImageUpload(e.target.files[0])}
+              className="hidden"
+            />
+          </div>
+
           <div>
             <p className='font-semibold text-xl'>{formData.firstName} {formData.lastName}</p>
             <p className='text-gray-600'>Professional Coach</p>
+            <p className='text-sm text-gray-500 mt-1'>Click your photo to upload headshot</p>
             {profile && (
               <div className='flex items-center gap-4 mt-2'>
                 <div className='flex items-center gap-1'>
@@ -953,7 +1224,7 @@ const Profile = () => {
             <input
               type="email"
               value={formData.email}
-              disabled={true} // Email usually shouldn't be editable
+              disabled={true}
               className='w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50'
             />
           </div>
@@ -977,7 +1248,7 @@ const Profile = () => {
       {/* Professional Information */}
       <div className='border-b pb-6 mb-6'>
         <h3 className='font-semibold text-lg mb-4'>Professional Information</h3>
-        
+
         <div className='space-y-4'>
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>Bio</label>
@@ -1056,7 +1327,7 @@ const Profile = () => {
           <MapPin size={20} className='inline mr-2' />
           Location
         </h3>
-        
+
         <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>City</label>
@@ -1102,7 +1373,7 @@ const Profile = () => {
         <p className='text-gray-600 text-sm mb-4'>
           Set your weekly availability to help clients book sessions at convenient times.
         </p>
-        
+
         <div className="space-y-4">
           {Object.entries(availability).map(([day, settings]) => (
             <div key={day} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
@@ -1110,60 +1381,24 @@ const Profile = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-4">
                   <span className="font-medium text-gray-900 w-24">{day}</span>
-                  
+
                   {/* Enhanced Toggle Switch */}
                   <button
                     onClick={() => editMode && toggleDay(day)}
                     disabled={!editMode}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
-                      settings.enabled ? 'bg-[#946BEF]' : 'bg-gray-300'
-                    } ${!editMode ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${settings.enabled ? 'bg-[#946BEF]' : 'bg-gray-300'
+                      } ${!editMode ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-                        settings.enabled ? 'translate-x-6' : 'translate-x-1'
-                      }`}
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${settings.enabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
                     />
                   </button>
-                  
+
                   <span className={`text-sm ${settings.enabled ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
                     {settings.enabled ? 'Available' : 'Not Available'}
                   </span>
                 </div>
-
-                {/* Quick Actions */}
-                {editMode && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        if (settings.enabled) {
-                          setAvailability(prev => ({
-                            ...prev,
-                            [day]: { ...prev[day], startTime: '09:00', endTime: '17:00' }
-                          }));
-                        }
-                      }}
-                      disabled={!settings.enabled}
-                      className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:opacity-50"
-                    >
-                      9-5
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (settings.enabled) {
-                          setAvailability(prev => ({
-                            ...prev,
-                            [day]: { ...prev[day], startTime: '08:00', endTime: '20:00' }
-                          }));
-                        }
-                      }}
-                      disabled={!settings.enabled}
-                      className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 disabled:opacity-50"
-                    >
-                      8-8
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Time Selection */}
@@ -1223,108 +1458,6 @@ const Profile = () => {
             </div>
           ))}
         </div>
-
-        {/* Availability Summary */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium text-gray-800 mb-3">Current Availability Summary:</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-            {Object.entries(availability).map(([day, settings]) => (
-              <div key={day} className="flex justify-between">
-                <strong>{day}:</strong>
-                <span className={settings.enabled ? 'text-green-600' : 'text-gray-400'}>
-                  {settings.enabled 
-                    ? `${new Date(`2000-01-01T${settings.startTime}`).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                      })} - ${new Date(`2000-01-01T${settings.endTime}`).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                        hour12: true
-                      })}`
-                    : 'Not available'
-                  }
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick Setup Options */}
-        {editMode && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <h4 className="font-medium text-blue-800 mb-3">Quick Setup:</h4>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => {
-                  const weekdaySchedule = { enabled: true, startTime: '09:00', endTime: '17:00' };
-                  setAvailability(prev => ({
-                    ...prev,
-                    Monday: weekdaySchedule,
-                    Tuesday: weekdaySchedule,
-                    Wednesday: weekdaySchedule,
-                    Thursday: weekdaySchedule,
-                    Friday: weekdaySchedule,
-                    Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-                    Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
-                  }));
-                }}
-                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
-              >
-                Weekdays 9-5
-              </button>
-              
-              <button
-                onClick={() => {
-                  const fullSchedule = { enabled: true, startTime: '08:00', endTime: '20:00' };
-                  setAvailability(prev => ({
-                    Monday: fullSchedule,
-                    Tuesday: fullSchedule,
-                    Wednesday: fullSchedule,
-                    Thursday: fullSchedule,
-                    Friday: fullSchedule,
-                    Saturday: fullSchedule,
-                    Sunday: fullSchedule
-                  }));
-                }}
-                className="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
-              >
-                All Week 8-8
-              </button>
-              
-              <button
-                onClick={() => {
-                  const weekend = { enabled: true, startTime: '10:00', endTime: '18:00' };
-                  setAvailability(prev => ({
-                    ...prev,
-                    Saturday: weekend,
-                    Sunday: weekend
-                  }));
-                }}
-                className="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition-colors"
-              >
-                Weekend 10-6
-              </button>
-              
-              <button
-                onClick={() => {
-                  setAvailability({
-                    Monday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-                    Tuesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-                    Wednesday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-                    Thursday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-                    Friday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-                    Saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-                    Sunday: { enabled: false, startTime: '09:00', endTime: '17:00' }
-                  });
-                }}
-                className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
-              >
-                Clear All
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Action Buttons */}

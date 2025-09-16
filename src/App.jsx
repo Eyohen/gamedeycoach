@@ -13,6 +13,7 @@ import 'coinley-checkout/dist/style.css'
 import DashboardLayout from './components/dashboard/DashboardLayout';
 import Explore from './pages/Explore';
 import Bookings from './pages/Bookings';
+import ViewBooking from './pages/ViewBooking';
 import Teams from './pages/Teams';
 import Community from './pages/Community';
 import Reviews from './pages/Reviews';
@@ -20,7 +21,6 @@ import Profile from './pages/Profile';
 import CreateTeam from './pages/CreateTeam';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
-import Sessions from './pages/Sessions';
 import FinOverview from './pages/FinOverview';
 import Events from './pages/Events';
 import GetPaid from './pages/GetPaid';
@@ -54,11 +54,7 @@ function App() {
             </DashboardLayout>
           } />
 
-          <Route path="/sessions" element={
-            <DashboardLayout>
-              <Sessions />
-            </DashboardLayout>
-          } />
+
 
           <Route path="/explore" element={
             <DashboardLayout>
@@ -77,6 +73,14 @@ function App() {
               <Teams />
             </DashboardLayout>
           } />
+
+          <Route path="/bookings/:bookingId" element={
+            <DashboardLayout>
+              <ViewBooking />
+            </DashboardLayout>
+          } />
+
+
 
           <Route path="/create-team" element={
             <DashboardLayout>
